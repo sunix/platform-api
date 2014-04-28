@@ -187,6 +187,7 @@ public class WorkspaceService extends Service {
         Member member = DtoFactory.getInstance().createDto(Member.class)
                                   .withUserId(user.getId())
                                   .withWorkspaceId(wsId)
+                                  .withRoles(Arrays.asList("workspace/admin"))
                                   .withRoles(Arrays.asList("workspace/developer"));
         memberDao.create(member);
         return Response.status(Response.Status.CREATED).entity(newWorkspace).build();
