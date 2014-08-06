@@ -11,10 +11,14 @@
 package com.codenvy.api.auth;
 
 import com.codenvy.api.auth.shared.dto.Credentials;
+import com.codenvy.api.auth.shared.dto.Token;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * Authenticate user by username and password.
@@ -38,8 +42,6 @@ public class AuthenticationService {
     /**
      * Get token to be able to call secure api methods.
      *
-     * @param tokenAccessCookie
-     *         - old session-based cookie with token
      * @param credentials
      *         - username and password
      * @return - auth token in JSON, session-based and persistent cookies
@@ -49,12 +51,18 @@ public class AuthenticationService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("login")
-    public Response authenticate(Credentials credentials,
-                                 @CookieParam("session-access-key") Cookie tokenAccessCookie,
-                                 @Context UriInfo uriInfo)
+    public Token authenticate(Credentials credentials)
             throws AuthenticationException {
 
-        return dao.login(credentials, tokenAccessCookie, uriInfo);
+        if (credentials == null
+            || credentials.getPassword() == null
+            || credentials.getPassword().isEmpty()
+            || credentials.getUsername() == null
+            || credentials.getUsername().isEmpty()) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+
+        return dao.login(credentials);
 
     }
 
@@ -63,18 +71,16 @@ public class AuthenticationService {
      *
      * @param token
      *         - authentication token
-     * @param tokenAccessCookie
-     *         - old session-based cookie with token.
      */
     @POST
     @Path("logout")
-    public Response logout(@QueryParam("token") String token,
-                           @CookieParam("session-access-key") Cookie tokenAccessCookie,
-                           @Context UriInfo uriInfo) {
+    public void logout(@QueryParam("token") String token,
+                       @Context UriInfo uriInfo) {
 
-
-        return dao.logout(token, tokenAccessCookie, uriInfo);
-
+        if (token == null) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+        dao.logout(token);
     }
 
 }
