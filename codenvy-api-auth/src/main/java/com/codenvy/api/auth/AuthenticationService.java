@@ -12,6 +12,8 @@ package com.codenvy.api.auth;
 
 import com.codenvy.api.auth.shared.dto.Credentials;
 import com.codenvy.api.auth.shared.dto.Token;
+import com.codenvy.api.core.ApiException;
+import com.codenvy.dto.server.DtoFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -45,14 +47,14 @@ public class AuthenticationService {
      * @param credentials
      *         - username and password
      * @return - auth token in JSON, session-based and persistent cookies
-     * @throws AuthenticationException
+     * @throws ApiException
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("login")
     public Token authenticate(Credentials credentials)
-            throws AuthenticationException {
+            throws ApiException {
 
         if (credentials == null
             || credentials.getPassword() == null
@@ -63,7 +65,6 @@ public class AuthenticationService {
         }
 
         return dao.login(credentials);
-
     }
 
     /**
@@ -80,7 +81,7 @@ public class AuthenticationService {
         if (token == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
-        dao.logout(token);
+        dao.logout(DtoFactory.getInstance().createDto(Token.class).withValue(token));
     }
 
 }

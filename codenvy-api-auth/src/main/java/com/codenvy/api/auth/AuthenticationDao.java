@@ -12,13 +12,27 @@ package com.codenvy.api.auth;
 
 import com.codenvy.api.auth.shared.dto.Credentials;
 import com.codenvy.api.auth.shared.dto.Token;
+import com.codenvy.api.core.ApiException;
 
 /**
  * @author gazarenkov
  */
 public interface AuthenticationDao {
+    /**
+     * Authenticate user by given credential and return authentication token.
+     *
+     * @param credentials
+     *         - username and password
+     * @return - authentication token
+     * @throws ApiException
+     */
+    Token login(Credentials credentials) throws ApiException;
 
-    Token login(Credentials credentials) throws AuthenticationException;
-
-    void logout(String token);
+    /**
+     * Invalidate given token.
+     *
+     * @param token
+     *         - token to invalidate.
+     */
+    void logout(Token token);
 }
