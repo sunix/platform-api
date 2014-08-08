@@ -9,7 +9,6 @@
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
 
-import junit.framework.Assert;
 
 import com.codenvy.api.auth.AuthenticationDao;
 import com.codenvy.api.auth.AuthenticationService;
@@ -34,6 +33,7 @@ import javax.ws.rs.core.Response;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.mockito.Mockito.verify;
+import static org.testng.Assert.assertEquals;
 
 @Listeners(value = {EverrestJetty.class, MockitoTestNGListener.class})
 public class AuthenticationServiceTest {
@@ -134,11 +134,11 @@ public class AuthenticationServiceTest {
                 .when()
                 .post("/auth/login").as(DtoServerImpls.TokenImpl.class, ObjectMapper.GSON);
         //then
-        Assert.assertEquals(expected, actual);
+        assertEquals(actual, expected);
         ArgumentCaptor<Credentials> argument = ArgumentCaptor.forClass(Credentials.class);
         verify(dao).login(argument.capture());
-        Assert.assertEquals("User", argument.getValue().getUsername());
-        Assert.assertEquals("password", argument.getValue().getPassword());
+        assertEquals(argument.getValue().getUsername(), "User");
+        assertEquals(argument.getValue().getPassword(), "password");
 
     }
 
@@ -163,6 +163,7 @@ public class AuthenticationServiceTest {
         ArgumentCaptor<Token> argument = ArgumentCaptor.forClass(Token.class);
         //then
         verify(dao).logout(argument.capture());
+        assertEquals(argument.getValue().getValue(), "er00349");
 
     }
 
