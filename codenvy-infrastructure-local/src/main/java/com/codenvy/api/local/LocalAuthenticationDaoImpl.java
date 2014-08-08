@@ -11,26 +11,22 @@
 package com.codenvy.api.local;
 
 import com.codenvy.api.auth.AuthenticationDao;
-import com.codenvy.api.auth.AuthenticationException;
 import com.codenvy.api.auth.shared.dto.Credentials;
 import com.codenvy.api.auth.shared.dto.Token;
+import com.codenvy.api.core.ApiException;
 import com.codenvy.dto.server.DtoFactory;
 
 import javax.inject.Singleton;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 @Singleton
 public class LocalAuthenticationDaoImpl implements AuthenticationDao {
     @Override
-    public Response login(Credentials credentials, Cookie tokenAccessCookie, UriInfo uriInfo) throws AuthenticationException {
-        return Response.ok().entity((DtoFactory.getInstance().createDto(Token.class).withValue("123123"))).build();
-        //return Response.ok().entity("{\"value\":\"123123\"}").build();
+    public Token login(Credentials credentials) throws ApiException {
+        return DtoFactory.getInstance().createDto(Token.class).withValue("123123");
     }
 
     @Override
-    public Response logout(String token, Cookie tokenAccessCookie, UriInfo uriInfo) {
-        return Response.ok().build();
+    public void logout(Token token) {
     }
 }
+
