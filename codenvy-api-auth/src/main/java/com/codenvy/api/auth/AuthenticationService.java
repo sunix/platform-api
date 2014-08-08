@@ -17,10 +17,8 @@ import com.codenvy.dto.server.DtoFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 /**
  * Authenticate user by username and password.
@@ -75,8 +73,7 @@ public class AuthenticationService {
      */
     @POST
     @Path("logout")
-    public void logout(@QueryParam("token") String token,
-                       @Context UriInfo uriInfo) {
+    public void logout(@QueryParam("token") String token) {
 
         if (token == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
