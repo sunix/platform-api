@@ -534,7 +534,8 @@ public class AccountService extends Service {
      *         when new subscription is {@code null}
      *         or new subscription plan identifier is {@code null}
      *         or new subscription account identifier is {@code null}
-     * @throws NotFoundException if plan with certain identifier is not found
+     * @throws NotFoundException
+     *         if plan with certain identifier is not found
      * @throws com.codenvy.api.core.ApiException
      * @see SubscriptionDescriptor
      * @see #getSubscriptionById(String, SecurityContext)
@@ -575,6 +576,9 @@ public class AccountService extends Service {
         subscription.setId(NameGenerator.generate(Subscription.class.getSimpleName().toLowerCase(), Constants.ID_LENGTH));
 
         service.beforeCreateSubscription(subscription);
+
+        LOG.info("Add subscription# id#{}# userId#{}# accountId#{}# planId#{}#", subscription.getId(),
+                 EnvironmentContext.getCurrent().getUser().getId(), subscription.getAccountId(), subscription.getPlanId());
 
         if (plan.isPaid() && !securityContext.isUserInRole("system/admin")) {
             paymentService.addSubscription(subscription, newSubscription.getBillingProperties());
@@ -677,10 +681,10 @@ public class AccountService extends Service {
      * @throws ServerException
      */
     @GET
-    @Path("{accountId}/subscription/validate")
+    @Path("{accountId}/subscriptions/validate")
     @RolesAllowed({"account/owner", "system/admin", "system/manager"})
     @Produces(MediaType.APPLICATION_JSON)
-    public NewSubscription validateSubscriptionAddition(@PathParam("accountId") String accountId, @QueryParam("plan") String planId)
+    public NewSubscription validateSubscriptionAddition(@PathParam("accountId") String accountId, @QueryParam("planId") String planId)
             throws NotFoundException, ServerException, ConflictException {
         if (null == planId) {
             throw new ConflictException("Plan identifier required");
