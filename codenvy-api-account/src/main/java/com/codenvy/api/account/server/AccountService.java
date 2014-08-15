@@ -627,7 +627,11 @@ public class AccountService extends Service {
         if (securityContext.isUserInRole("user") && !resolveRolesForSpecificAccount(toRemove.getAccountId()).contains("account/owner")) {
             throw new ForbiddenException("Access denied");
         }
-        paymentService.removeSubscription(subscriptionId);
+        try {
+            paymentService.removeSubscription(subscriptionId);
+        } catch (NotFoundException ignored) {
+            LOG.info(ignored.getLocalizedMessage(), ignored);
+        }
         accountDao.removeSubscription(subscriptionId);
         accountDao.removeBillingProperties(subscriptionId);
         final SubscriptionService service = registry.get(toRemove.getServiceId());
